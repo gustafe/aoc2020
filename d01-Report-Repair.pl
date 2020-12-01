@@ -59,12 +59,12 @@ while (@invoice) {
 # just select a candidate and search through the rest
 OUTER:
 for my $i ( 0 .. $#invoice ) {
-    my $candidate1 = $invoice[$i];
+    my $candidate = $invoice[$i];
     for my $j ( $i + 1 .. $#invoice ) {
-        next if ( $invoice[$j] > 2020 - $candidate1 );
-        my $target = 2020 - ( $candidate1 + $invoice[$j] );
+        next if ( $invoice[$j] > 2020 - $candidate );
+        my $target = 2020 - ( $candidate + $invoice[$j] );
         if ( exists $index{$target} ) {
-            my $part2 = $candidate1 * $invoice[$j] * $target;
+            my $part2 = $candidate * $invoice[$j] * $target;
             is( $part2, 283025088, "Part 2: $part2" );
 
             last OUTER;
