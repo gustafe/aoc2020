@@ -27,7 +27,7 @@ foreach my $line (@file_contents) {
 
     # this assignment is just to supress errors in the numeric
     # comparison in case the key doesn't exist
-    my $res = $freq{$req} ? $freq{$req} : 0;
+    my $res = $freq{$req} // 0;
     $counts{1}++ if ( ( $min <= $res ) and ( $res <= $max ) );
 
     # part 2
