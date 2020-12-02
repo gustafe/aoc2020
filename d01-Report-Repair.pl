@@ -56,6 +56,6 @@ for my $i ( 0 .. $#invoice ) {
         }
     }
 }
-is( $ans{1}, 870331,    "Part 1: " . $ans{1} );
-is( $ans{2}, 283025088, "Part 2: " . $ans{2} );
+is( $ans{1}, 870331,    "Part 1: $ans{1}");
+is( $ans{2}, 283025088, "Part 2: $ans{2}" );
 
