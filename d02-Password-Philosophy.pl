@@ -23,30 +23,20 @@ my %counts = ( 1 => 0, 2 => 0 );
 foreach my $line (@file_contents) {
     my ( $min, $max, $req, $pwd ) = $line =~ m/^(\d+)-(\d+) (.): (.*)$/;
 
-    my %freq;
     my @ary = split( //, $pwd );
-    foreach my $c (@ary) {
-        $freq{$c}++;
-    }
+    my %freq;
+    map { $freq{$_}++ } @ary;
 
     # this assignment is just to supress errors in the numeric
     # comparison in case the key doesn't exist
     my $res = $freq{$req} ? $freq{$req} : 0;
-    if ( ( $min <= $res ) and ( $res <= $max ) ) {
-        $counts{1}++;
-    }
+    $counts{1}++ if ( ( $min <= $res ) and ( $res <= $max ) );
 
     # part 2
-    my @pos = ( 0, 0 );
-    if ( $ary[ $min - 1 ] eq $req ) {
-        $pos[0] = 1;
-    }
-    if ( $ary[ $max - 1 ] eq $req ) {
-        $pos[1] = 1;
-    }
-    if ( sum(@pos) == 1 ) {
-        $counts{2}++;
-    }
+
+    my @pos = map { $ary[ $_ - 1 ] eq $req ? 1 : 0 } ( $min, $max );
+    $counts{2}++ if ( sum(@pos) == 1 );
+
 }
 is( $counts{1}, 477, "Part 1: $counts{1}" );
 is( $counts{2}, 686, "Part 2: $counts{2}" );
