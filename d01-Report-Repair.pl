@@ -35,40 +35,27 @@ while (<$fh>) {
     push @file_contents, $_;
     $pos++;
 }
-my @invoice = @file_contents;
 
 ### CODE
+my @invoice = @file_contents;
+my %ans     = ();
 
-# part 1
-
-while (@invoice) {
-    my $candidate = shift @invoice;
-    my $target    = 2020 - $candidate;
-    if ( exists $index{$target} ) {
-        my $part1 = $candidate * $target;
-        is( $part1, 870331, "Part 1: $part1" );
-        last;
-    }
-}
-
-# part 2
-
-# reload the data we shift()ed out in part 1
-@invoice = @file_contents;
-
-# just select a candidate and search through the rest
 OUTER:
 for my $i ( 0 .. $#invoice ) {
     my $candidate = $invoice[$i];
     for my $j ( $i + 1 .. $#invoice ) {
+        if ( $candidate + $invoice[$j] == 2020 ) {
+            $ans{1} = $candidate * $invoice[$j];
+        }
         next if ( $invoice[$j] > 2020 - $candidate );
         my $target = 2020 - ( $candidate + $invoice[$j] );
         if ( exists $index{$target} ) {
             my $part2 = $candidate * $invoice[$j] * $target;
-            is( $part2, 283025088, "Part 2: $part2" );
-
-            last OUTER;
+            $ans{2} = $part2;
+            last OUTER if scalar keys %ans == 2;
         }
     }
 }
+is( $ans{1}, 870331,    "Part 1: " . $ans{1} );
+is( $ans{2}, 283025088, "Part 2: " . $ans{2} );
 
