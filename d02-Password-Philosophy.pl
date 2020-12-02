@@ -8,8 +8,6 @@
 use Modern::Perl '2015';
 
 # useful modules
-use List::Util qw/sum/;
-use Data::Dumper;
 use Test::More tests => 2;
 #### INIT - load input data from file into array
 my $testing = 0;
@@ -35,7 +33,7 @@ foreach my $line (@file_contents) {
     # part 2
 
     my @pos = map { $ary[ $_ - 1 ] eq $req ? 1 : 0 } ( $min, $max );
-    $counts{2}++ if ( sum(@pos) == 1 );
+    $counts{2}++ if ( $pos[0] ^ $pos[1] );
 
 }
 is( $counts{1}, 477, "Part 1: $counts{1}" );
