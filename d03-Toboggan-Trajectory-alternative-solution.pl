@@ -24,11 +24,10 @@ while (<$fh>) {
 ### CODE
 my $maxcol = scalar( split( //, $Map->[0] ) );
 my @factors;
+# this string is to avoid definedness errors when we venture outside the map
 my $empty     = ('.') x $maxcol;
-my @toboggans = ( { right => 3, down => 1 },
-		  { right => 1, down => 1 },
-		  { right => 5, down => 1 },
-		  { right => 7, down => 1 },
+my @toboggans = ( { right => 3, down => 1 }, { right => 1, down => 1 },
+		  { right => 5, down => 1 }, { right => 7, down => 1 },
 		  { right => 1, down => 2 },
 		);
 
