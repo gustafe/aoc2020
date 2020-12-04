@@ -23,7 +23,67 @@ open( my $fh, '<', "$file" );
     }
 }
 ### CODE
-sub validate;
+
+my %rules = (
+    byr => sub {
+        return undef unless $_[0] =~ m/\d{4}/;
+        return undef unless ( $_[0] >= 1920 and $_[0] <= 2002 );
+    },
+    iyr => sub {
+        return undef unless $_[0] =~ m/\d{4}/;
+        return undef unless ( $_[0] >= 2010 and $_[0] <= 2020 );
+    },
+    eyr => sub {
+        return undef unless $_[0] =~ m/\d{4}/;
+        return undef unless ( $_[0] >= 2020 and $_[0] <= 2030 );
+    },
+    hgt => sub {
+        return undef unless $_[0] =~ m/(\d+)(..)/;
+        if ( $2 eq 'cm' ) {
+            return undef unless ( $1 >= 150 and $1 <= 193 );
+        }
+        elsif ( $2 eq 'in' ) {
+            return undef unless ( $1 >= 59 and $1 <= 76 );
+        }
+        else {
+            return undef;
+        }
+
+    },
+    hcl => sub {
+        return undef unless $_[0] =~ m/\#[0-9a-f]{6}/;
+
+    },
+    ecl => sub {
+        return undef unless $_[0] =~ m/amb|blu|brn|gry|grn|hzl|oth/;
+
+    },
+    pid => sub {
+        return undef unless $_[0] =~ m/^\d{9}$/;
+
+    },
+);
+
+sub validate {
+
+    my ($rec) = @_;
+
+    foreach my $key ( keys %rules ) {
+        return undef unless exists $rec->{$key};
+        return undef unless ( $rules{$key}->( $rec->{$key} ) );
+    }
+    return 1;
+}
+
+sub dump_record {
+    my ($rec) = @_;
+    foreach my $key ( sort { $a cmp $b } keys %rules ) {
+        print $key, ": ", $rec->{$key} // "n/a", ' ';
+    }
+    print "\n";
+}
+
+# massage data into a form we can use
 my @records;
 foreach (@file_contents) {
     my @r = split( /\n/, $_ );
@@ -41,6 +101,8 @@ foreach (@file_contents) {
 
     push @records, \%data;
 }
+
+# count the valid passports!
 my @valids = ( 0, 0 );
 foreach my $record (@records) {
     if ( scalar keys %{$record} == 8 ) {
@@ -59,60 +121,3 @@ foreach my $record (@records) {
 is( $valids[0], 239, "Part1: $valids[0]" );
 is( $valids[1], 188, "Part2: $valids[1]" );
 
-sub validate {
-
-    my ($rec) = @_;
-    my %rules = (
-        byr => sub {
-            return undef unless $_[0] =~ m/\d{4}/;
-            return undef unless ( $_[0] >= 1920 and $_[0] <= 2002 );
-        },
-        iyr => sub {
-            return undef unless $_[0] =~ m/\d{4}/;
-            return undef unless ( $_[0] >= 2010 and $_[0] <= 2020 );
-        },
-        eyr => sub {
-            return undef unless $_[0] =~ m/\d{4}/;
-            return undef unless ( $_[0] >= 2020 and $_[0] <= 2030 );
-        },
-        hgt => sub {
-            return undef unless $_[0] =~ m/(\d+)(..)/;
-            if ( $2 eq 'cm' ) {
-                return undef unless ( $1 >= 150 and $1 <= 193 );
-            }
-            elsif ( $2 eq 'in' ) {
-                return undef unless ( $1 >= 59 and $1 <= 76 );
-            }
-            else {
-                return undef;
-            }
-
-        },
-        hcl => sub {
-            return undef unless $_[0] =~ m/\#[0-9a-f]{6}/;
-
-        },
-        ecl => sub {
-            return undef unless $_[0] =~ m/amb|blu|brn|gry|grn|hzl|oth/;
-
-        },
-        pid => sub {
-            return undef unless $_[0] =~ m/^\d{9}$/;
-
-        },
-    );
-
-    foreach my $key ( keys %rules ) {
-        return undef unless exists $rec->{$key};
-        return undef unless ( $rules{$key}->( $rec->{$key} ) );
-    }
-    return 1;
-}
-
-sub dump_record {
-    my ($rec) = @_;
-    foreach my $key (qw/byr iyr eyr hgt hcl ecl pid /) {
-        print $key, ": ", $rec->{$key} // "n/a", ' ';
-    }
-    print "\n";
-}
