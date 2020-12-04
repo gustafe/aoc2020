@@ -103,21 +103,21 @@ foreach (@file_contents) {
 }
 
 # count the valid passports!
-my @valids = ( 0, 0 );
+my %valids = (1=> 0, 2=>0 );
 foreach my $record (@records) {
     if ( scalar keys %{$record} == 8 ) {
-        $valids[0]++;
+        $valids{1}++;
     }
     elsif ( scalar keys %{$record} == 7 and !exists $record->{cid} ) {
-        $valids[0]++;
+        $valids{1}++;
     }
     if ( validate($record) ) {
 
-        $valids[1]++;
+        $valids{2}++;
 
     }
 
 }
-is( $valids[0], 239, "Part1: $valids[0]" );
-is( $valids[1], 188, "Part2: $valids[1]" );
+is( $valids{1}, 239, "Part1: $valids{1}" );
+is( $valids{2}, 188, "Part2: $valids{2}" );
 
