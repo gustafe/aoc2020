@@ -27,32 +27,18 @@ my @answers;
 my $part1;
 my $part2;
 foreach (@file_contents) {
-    my $per_group;
-    my $ary;
+    my $respondents = 0;
+    my %h;
     foreach ( split( "\n", $_ ) ) {
-        my $h;
         foreach ( split( //, $_ ) ) {
-            $per_group->{$_}++;
-            $h->{$_}++;
+            $h{$_}++;
         }
-        push @{$ary}, $h;
-
+	$respondents++;
     }
-    $part1 += scalar keys %{$per_group};
-    push @answers, $ary;
-}
-
-foreach my $group (@answers) {
-    my %collate;
-    foreach my $person ( @{$group} ) {
-        foreach my $c ( 'a' .. 'z' ) {
-            $collate{$c}++ if exists $person->{$c};
-        }
-    }
-    foreach my $k ( keys %collate ) {
-        $part2++ if $collate{$k} == scalar @{$group};
+    foreach my $k (keys %h) {
+	$part1++;
+	$part2++ if $h{$k} == $respondents;
     }
 }
 is( $part1, 6382, "Part1: $part1" );
 is( $part2, 3197, "Part2: $part2" );
-
