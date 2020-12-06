@@ -23,7 +23,6 @@ open( my $fh, '<', "$file" );
 }
 
 ### CODE
-my @answers;
 my $part1;
 my $part2;
 foreach (@file_contents) {
@@ -33,11 +32,11 @@ foreach (@file_contents) {
         foreach ( split( //, $_ ) ) {
             $h{$_}++;
         }
-	$respondents++;
+        $respondents++;
     }
-    foreach my $k (keys %h) {
-	$part1++;
-	$part2++ if $h{$k} == $respondents;
+    foreach my $k ( keys %h ) {
+        $part1++;
+        $part2++ if $h{$k} == $respondents;
     }
 }
 is( $part1, 6382, "Part1: $part1" );
