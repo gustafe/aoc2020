@@ -11,6 +11,10 @@ use Test::More tests => 2;
 my $testing = 0;
 my $opt = shift // 0;
 my @file_contents;
+
+# for part 2 there are 2 example files, passing an argument will
+# switch between them
+
 my $testfile;
 
 if ($opt) {
@@ -38,8 +42,13 @@ while (@file_contents) {
         $hash->{$container}->{$kind} = $amount;
     }
 }
+
+# soundtrack - Lloyd Cole & The Commotions: "My Bag" -
+# https://www.youtube.com/watch?v=MG6lDsZQs5A
+
 my %results;
 my @queue = ('shiny gold');
+
 while (@queue) {
     my $target = shift @queue;
     foreach my $bag ( keys %$hash ) {
