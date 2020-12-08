@@ -1,11 +1,10 @@
 #! /usr/bin/env perl
 # Advent of Code 2020 Day 8 - Handheld Halting - complete solution
-
-    # Problem link: http://adventofcode.com/2020/day/8
-    #   Discussion: http://gerikson.com/blog/comp/Advent-of-Code-2020.html#d08
-    #      License: http://gerikson.com/files/AoC2020/UNLICENSE
+# Problem link: http://adventofcode.com/2020/day/8
+#   Discussion: http://gerikson.com/blog/comp/Advent-of-Code-2020.html#d08
+#      License: http://gerikson.com/files/AoC2020/UNLICENSE
 ###########################################################
-    use Modern::Perl '2015';
+use Modern::Perl '2015';
 
 # useful modules
 use Test::More tests => 2;
@@ -52,6 +51,8 @@ foreach my $line_no (@{$ops{'jmp'}}) {
     # sanity check
     if ($original[$line_no]->[0] eq 'jmp') {
 	$code->[$line_no]->[0] = 'nop'
+    } else {
+	die "value ",$original[$line_no]->[0]," is not expected 'jmp'!";
     }
     my $ret = run_program($code);
     if (defined $ret->[0]) {
