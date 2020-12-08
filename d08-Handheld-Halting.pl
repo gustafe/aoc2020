@@ -31,19 +31,20 @@ foreach (@file_contents) {
     $line_no++;
 }
 
-my %parts = ( 1=>undef , 2=>undef );
+my $part1; my $part2;
+
 # part 1
 my $ret = run_program( \@original );
 if (defined $ret->[0]) {
     die "this shouldn't be possible here!"
 } else {
-    $parts{1} = $ret->[1];
+    $part1 = $ret->[1];
 
 }
-
+is($part1, 1200, "Part 1: $part1");
 # part 2
 # start with jmp->nop as that's the largest set
-
+my $subst=0;
 foreach my $line_no (@{$ops{'jmp'}}) {
     # we need to use Clone::clone here because just assigning will
     # modify the original
@@ -54,13 +55,17 @@ foreach my $line_no (@{$ops{'jmp'}}) {
     }
     my $ret = run_program($code);
     if (defined $ret->[0]) {
-	$parts{2} = $ret->[1];
+	$part2 = $ret->[1];
+	say "==> found part 2 at substition ('jmp'->'nop') $subst of ",scalar @{$ops{'jmp'}};
 	last;
     }
+    $subst++;
 }
 
-is($parts{1}, 1200, "Part1: ".$parts{1});
-is($parts{2}, 1023, "Part2: ".$parts{2});
+# we should maybe try the nop->jmp substitution here but as the
+# previous one already gave the answer I won't bother
+
+is($part2, 1023, "Part 2: $part2");
 
 sub run_program {
     my ($program) = @_;
