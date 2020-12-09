@@ -30,22 +30,12 @@ for ( $lower .. $upper ) {
     $h{ $stream[$_] }++;
 }
 
-OUTER:
 while ( $upper < scalar @stream ) {
 
-    my @tests;
-    for my $i ( $lower .. $upper ) {
-        push @tests, $target - $stream[$i];
-    }
-    my $found = 0;
-    foreach (@tests) {
-        $found++ if exists $h{$_};
-    }
-    if ( !$found ) {
+    my $match = scalar grep { exists $h{$_} }
+        map { $target - $stream[$_] } ( $lower .. $upper );
 
-        # we've found the target, break out of the loop
-        last OUTER;
-    }
+    last unless $match;
 
     # move our window
     delete $h{ $stream[$lower] };
@@ -75,7 +65,8 @@ while ( $start > 0 ) {
     }
 
     if ( $sum == $target ) {    # this could probably be more elegant
-	# find smallest and largest
+
+        # find smallest and largest
         my @contig = map { $stream[$_] } ( $next + 1 .. $start );
         $part2 = sum( min(@contig), max(@contig) );
         last;
