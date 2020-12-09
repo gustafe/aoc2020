@@ -6,10 +6,11 @@
 ###########################################################
 
 use Modern::Perl '2015';
+
 # useful modules
 use List::Util qw/sum min max/;
 use Data::Dumper;
-use Test::More tests=>2;
+use Test::More tests => 2;
 #### INIT - load input data from file into array
 my $testing = 0;
 my @stream;
@@ -20,68 +21,66 @@ while (<$fh>) { chomp; s/\r//gm; push @stream, $_; }
 ### CODE
 # set up window
 my $lower = 0;
-my $upper = $testing? 4 : 24;
+my $upper = $testing ? 4 : 24;
 
-my $target = $stream[$upper+1];
+my $target = $stream[ $upper + 1 ];
 my %h;
 
-for ($lower..$upper) {
-    $h{$stream[$_]}++
+for ( $lower .. $upper ) {
+    $h{ $stream[$_] }++;
 }
 
 OUTER:
-while ($upper < scalar @stream) {
+while ( $upper < scalar @stream ) {
 
     my @tests;
-    for my $i ($lower..$upper) {
-	push @tests, $target-$stream[$i];
+    for my $i ( $lower .. $upper ) {
+        push @tests, $target - $stream[$i];
     }
     my $found = 0;
     foreach (@tests) {
-	$found++ if exists $h{$_};
+        $found++ if exists $h{$_};
     }
-    if (!$found) {
-	# we've found the target, break out of the loop
-	last OUTER;
+    if ( !$found ) {
+
+        # we've found the target, break out of the loop
+        last OUTER;
     }
+
     # move our window
-    delete $h{$stream[$lower]};
-    $h{$stream[$upper+1]}++;
-    $target = $stream[$upper+2];
+    delete $h{ $stream[$lower] };
+    $h{ $stream[ $upper + 1 ] }++;
+    $target = $stream[ $upper + 2 ];
     $lower++;
     $upper++;
 }
-is( $target,20874512 ,"Part 1: $target");
+is( $target, 20874512, "Part 1: $target" );
 
 # part 2
 my $part2;
+
 # let's go from the top
 my $start = $#stream;
-while ($start>0) {
-    if ($stream[$start]>=$target) {
-	$start--;
-	next;
+while ( $start > 0 ) {
+    if ( $stream[$start] >= $target ) {
+        $start--;
+        next;
     }
 
-    my $sum = $stream[$start];
-    my $next = $start-1;
-    while ($sum<$target) {
-	$sum +=$stream[$next];
-	$next--;
+    my $sum  = $stream[$start];
+    my $next = $start - 1;
+    while ( $sum < $target ) {
+        $sum += $stream[$next];
+        $next--;
     }
 
-    if ($sum==$target) { # this could probably be more elegant
+    if ( $sum == $target ) {    # this could probably be more elegant
 	# find smallest and largest
-	my  $min = 2 * $stream[$#stream];
-	my $max = -1;
-	for ($next+1..$start) {
-	    if ($stream[$_]<$min ) { $min=$stream[$_]}
-	    if ($stream[$_]>$max) { $max= $stream[$_]}
-	}
-	$part2 = sum($min,$max);
-	last;
+        my @contig = map { $stream[$_] } ( $next + 1 .. $start );
+        $part2 = sum( min(@contig), max(@contig) );
+        last;
     }
     $start--;
 }
 
-is($part2, 3012420, "Part 2: $part2");
+is( $part2, 3012420, "Part 2: $part2" );
