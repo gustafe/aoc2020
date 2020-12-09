@@ -32,6 +32,9 @@ for ( $lower .. $upper ) {
 
 while ( $upper < scalar @stream ) {
 
+    # compare the difference between the target and each 25 preceding
+    # elements and see if the result is among those elements.
+
     my $match = grep { exists $h{$_} }
         map { $target - $stream[$_] } ( $lower .. $upper );
 
@@ -66,7 +69,7 @@ while ( $start > 0 ) {
 
     if ( $sum == $target ) {    # this could probably be more elegant
 
-        # find smallest and largest
+        # find sum of smallest and largest
         my @contig = map { $stream[$_] } ( $next + 1 .. $start );
         $part2 = sum( min(@contig), max(@contig) );
         last;
