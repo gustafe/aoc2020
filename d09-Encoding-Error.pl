@@ -32,7 +32,7 @@ for ( $lower .. $upper ) {
 
 while ( $upper < scalar @stream ) {
 
-    my $match = scalar grep { exists $h{$_} }
+    my $match = grep { exists $h{$_} }
         map { $target - $stream[$_] } ( $lower .. $upper );
 
     last unless $match;
