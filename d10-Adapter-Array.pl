@@ -11,7 +11,7 @@ use Modern::Perl '2015';
 use List::Util qw/max/;
 use Test::More tests => 2;
 use Time::HiRes qw/gettimeofday tv_interval/;
-
+use Memoize ;
 my $start_time = [gettimeofday];
 
 #### INIT - load input data from file into array
@@ -59,11 +59,26 @@ unshift @sequence, 0;
 my @G;
 for my $i ( 0 .. $#sequence ) {
     $G[$i]->{v} = $sequence[$i];
-    for my $step ( $i + 1 .. $i + 3 ) {
-        last unless defined $sequence[$step];
-        push @{ $G[$i]->{e} }, $step if $sequence[$step] - $sequence[$i] <= 3;
+    for my $step (  1 .. 3 ) {
+        last unless defined $sequence[$i+$step];
+        push @{ $G[$i]->{e} }, $i+$step if $sequence[$i+$step] - $sequence[$i] <= 3;
     }
 }
+
+# this is part of a test of Memoize. It's the same sub are `traverse`
+# but without the explicit memoization
+
+sub slow_traverse {
+    my $node  = $G[ $_[0] ];
+    my $count = 0;
+    return 1 unless defined $node->{e};
+    foreach my $idx ( @{ $node->{e} } ) {
+        $count += slow_traverse($idx);
+    }
+    return $count;
+
+}
+memoize ('slow_traverse');
 
 sub traverse {
     my $node  = $G[ $_[0] ];
@@ -77,7 +92,10 @@ sub traverse {
     $node->{m} = $count;
     return $count;
 }
-my $part2 = traverse(0);
+my $part2;
+#$part2 = slow_traverse(0);
+$part2 = traverse(0);
+
 is( $part2, 113387824750592, "Part 2: " . $part2 );
 
 say "Duration: ", tv_interval($start_time) * 1000, "ms";
