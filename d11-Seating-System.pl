@@ -10,7 +10,6 @@ use Modern::Perl '2015';
 # useful modules
 use Test::More tests => 2;
 use Clone qw/clone/;
-use Data::Dumper;
 use Time::HiRes qw/gettimeofday tv_interval/;
 
 my $start_time = [gettimeofday];
@@ -62,48 +61,33 @@ for my $row ( 0 .. $maxrow - 1 ) {
     }
 }
 
-sub dump_state {
-    my ($m) = @_;
-    for ( my $r = 0; $r < $maxrow; $r++ ) {
-        for ( my $c = 0; $c < $maxcol; $c++ ) {
-            print $m->{$r}->{$c} // '.';
-        }
-        print "\n";
-    }
-}
 
-sub compare_states {
-    my ( $A, $B ) = @_;
-    my ( $count, $diff ) = ( 0, 0 );
-    for ( my $r = 0; $r < $maxrow; $r++ ) {
-        for ( my $c = 0; $c < $maxcol; $c++ ) {
-            next unless ( defined $A->{$r}{$c} and defined $B->{$r}{$c} );
-            $count++ if $A->{$r}{$c} eq '#';
-            if ( $A->{$r}{$c} ne $B->{$r}{$c} ) {
-                $diff++;
-            }
+sub count_seated {
+    my ($s) = @_;
+    my $count = 0;
+    foreach my $r ( keys %$s ) {
+        foreach my $c ( keys %{ $s->{$r} } ) {
+            $count++ if $s->{$r}{$c} eq '#';
         }
     }
-    if ($diff) {
-        return undef;
-    }
-    else {
-        return $count;
-    }
+    return $count;
 }
 
 # part 1
 
 my $newstate;
-my $diffs = 0;
+
 for ( 1 .. 99 ) {
+    my $diffs = 0;
     for ( my $row = 0; $row < $maxrow; $row++ ) {
         for ( my $col = 0; $col < $maxcol; $col++ ) {
+
             next unless $Map->{$row}{$col} eq 'L';
             my $occupied = 0;
             foreach my $pos ( @{ $Neighbors->{$row}{$col}{1} } ) {
                 $occupied++ if $state->{ $pos->[0] }{ $pos->[1] } eq '#';
             }
+            my $prev = $newstate->{$row}{$col} // '*';
             if ( $state->{$row}{$col} eq '#' and $occupied >= 4 ) {
                 $newstate->{$row}{$col} = 'L';
             }
@@ -113,14 +97,14 @@ for ( 1 .. 99 ) {
             else {
                 $newstate->{$row}{$col} = $state->{$row}{$col};
             }
+            $diffs++ unless $prev eq $newstate->{$row}{$col};
 
         }
 
     }
-    my $same = compare_states( $state, $newstate );
-    if ($same) {
-        is( $same, 2093, "Part 1: " . $same );
-        say "solution to part 1 found after $_ iterations";
+    if ( $diffs == 0 ) {
+        my $solution = count_seated($state);
+        is( $solution, 2093, "Part 1: " . $solution );
         last;
     }
     $state = clone $newstate;
@@ -131,6 +115,7 @@ $state    = clone $Map;
 $newstate = undef;
 
 foreach ( 1 .. 99 ) {
+    my $diffs = 0;
     for ( my $row = 0; $row < $maxrow; $row++ ) {
         for ( my $col = 0; $col < $maxcol; $col++ ) {
             next unless $Map->{$row}{$col} eq 'L';
@@ -140,6 +125,7 @@ foreach ( 1 .. 99 ) {
                     $occupied++ if $state->{ $pos->[0] }{ $pos->[1] } eq '#';
                 }
             }
+            my $prev = $newstate->{$row}{$col} // '*';
             if ( $state->{$row}{$col} eq 'L' and $occupied == 0 ) {
                 $newstate->{$row}{$col} = '#';
             }
@@ -149,14 +135,14 @@ foreach ( 1 .. 99 ) {
             else {
                 $newstate->{$row}{$col} = $state->{$row}{$col};
             }
+            $diffs++ unless $prev eq $newstate->{$row}{$col};
         }
     }
-
-    my $same = compare_states( $state, $newstate );
-    if ($same) {
-        is( $same, 1862, "Part 2: " . $same );
-        say "solution to part 2 found after $_ iterations";
+    if ( $diffs == 0 ) {
+        my $solution = count_seated($state);
+        is( $solution, 1862, "Part 2: " . $solution );
         last;
+
     }
     $state = clone $newstate;
 
