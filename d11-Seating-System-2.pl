@@ -49,6 +49,7 @@ sub compare_states {
     my ( $count, $diff ) = (0,0);
     for (my $r =0 ;$r<$maxrow;$r++) {
 	for (my $c=0;$c<$maxcol;$c++) {
+	    next unless (defined $A->{$r}{$c} and defined $B->{$r}{$c});
 	    $count++ if $A->{$r}{$c} eq '#';
 	    if ($A->{$r}{$c} ne $B->{$r}{$c}) {
 		$diff++

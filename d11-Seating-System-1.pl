@@ -37,6 +37,7 @@ sub compare_states {
     my $diff  = 0;
     for ( my $r = 0; $r < scalar @$in; $r++ ) {
         for ( my $c = 0; $c < scalar $in->[$r]->@*; $c++ ) {
+	    next unless (defined $in->[$r][$c] and defined $out->[$r][$c]);
             $count++ if $in->[$r][$c] eq '#';
             if ( $in->[$r][$c] ne $out->[$r][$c] ) {
                 $diff++;
@@ -83,8 +84,8 @@ for ( 1 .. 999 ) {
                     or $c < 0
                     or $r > scalar @$Map
 			 or $c > $maxcol );
-#		my $mapval = $Map->[$r]->[$c]?$Map->[$r]->[$c] : '/';
-                if ( $Map->[$r]->[$c] eq 'L' and $state->[$r]->[$c] eq '#' ) {
+		my $mapval = $Map->[$r]->[$c]?$Map->[$r]->[$c] : '/';
+                if ( $mapval eq 'L' and $state->[$r]->[$c] eq '#' ) {
                     $occupied++;
                 }
 
