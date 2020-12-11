@@ -9,6 +9,7 @@ use Modern::Perl '2015';
 # useful modules
 use Test::More tests=>2;
 use Clone qw/clone/;
+use Data::Dumper;
 use Time::HiRes qw/gettimeofday tv_interval/;
 
 my $start_time = [gettimeofday];
@@ -32,8 +33,33 @@ foreach my $line (@file_contents) {
 	$maxcol++;
     }
     $maxrow++;
-		     
 }
+my $Neighbors;
+for my $row (0..$maxrow-1) {
+    for my $col (0..$maxcol-1) {
+	# only consider points with chairs
+	next unless $Map->{$row}{$col} eq 'L';
+      DIRECTION:
+	for my $dir([-1,-1],[-1,0],[-1,1],
+		    [0,-1],       [0,1],
+		    [1,-1],[1,0],[1,1]) {
+	    my ($r,$c)=($row+$dir->[0],$col+$dir->[1]);
+	    my $layer = 1;
+	    next DIRECTION unless defined $Map->{$r}{$c};
+	    while (defined $Map->{$r}{$c}) {
+		if ($Map->{$r}{$c} eq 'L') {
+		    push @{$Neighbors->{$row}{$col}{$layer}}, [$r,$c];
+		    next DIRECTION;
+		}
+		$r += $dir->[0];
+		$c += $dir->[1];
+		$layer++;
+	    }
+
+	}
+    }
+}
+
 sub dump_state {
     my ( $m ) = @_;
     for (my $r =0 ;$r<$maxrow;$r++) {
@@ -70,64 +96,41 @@ for (1..99) {
 	for (my $col=0;$col<$maxcol;$col++) {
 	    next unless $Map->{$row}{$col} eq 'L';
 	    my $occupied = 0;
-	    for my $dir ([ -1, -1 ], [ -1, 0 ], [ -1, 1 ],
- 			  [ 0, -1 ],          , [ 0, 1 ],
-			 [ 1, -1 ], [ 1, 0 ] , [ 1, 1 ]) {
-		my ( $r,$c)=($row+$dir->[0],$col+$dir->[1]);
-		next unless defined $Map->{$r}{$c};
-		if ($Map->{$r}{$c} eq 'L' and $state->{$r}{$c} eq '#') {
-		    $occupied++
-		}
+	    foreach my $pos (@{$Neighbors->{$row}{$col}{1}}) {
+		$occupied++ if $state->{$pos->[0]}{$pos->[1]} eq '#'
 	    }
-	    my $prev = $newstate->{$row}{$col} // '*';
 	    if ($state->{$row}{$col} eq '#' and $occupied >= 4) {
-#		$diffs++ unless		  ($newstate->{$row}{$col} eq $state->{$row}{$col});
 		$newstate->{$row}{$col} = 'L'
-	    } elsif ($state->{$row}{$col} eq 'L' 
- and $occupied==0) {
-#		$diffs++ unless		  ($newstate->{$row}{$col} eq $state->{$row}{$col});
+	    } elsif ($state->{$row}{$col} eq 'L' and $occupied==0) {
 		$newstate->{$row}{$col}= '#'
 	    } else {
 		$newstate->{$row}{$col} = $state->{$row}{$col}
 	    }
-	    $diffs++ unless ($prev eq $newstate->{$row}{$col});
+
 	}
 	
     }
-#    say "$_";
     my $same = compare_states( $state, $newstate );
     if ($same) {
 	is( $same, 2093 , "Part 1: ".$same);
 	say "solution to part 1 found after $_ iterations";
-	last;
+        last;
     }
     $state = clone $newstate;
-
 }
-#exit 0;
+
 # part 2
 $state = clone $Map;
 $newstate = undef;
 
 foreach (1..99) {
-    # scan the map and assign seats
     for (my $row=0;$row<$maxrow;$row++) {
 	for (my $col=0;$col<$maxcol;$col++) {
 	    next unless $Map->{$row}{$col} eq 'L';
 	    my $occupied = 0;
-	  DIRECTION:
-	    for my $dir ([-1,0,'N'],[-1,1,'NE'],[0,1,'E'],[1,1,'SE'],[1,0,'S'],[1,-1,'SW'],[0,-1,'W'],[-1,-1,'NW']) {
-		my ( $r,$c )= ($row + $dir->[0], $col + $dir->[1]);
-		next DIRECTION unless defined $Map->{$r}{$c};
-		while (defined $Map->{$r}{$c}) {
-		    if ($Map->{$r}{$c} eq 'L') {
-			if ($state->{$r}{$c} eq '#') {
-			    $occupied++
-			}
-			next DIRECTION;
-		    }
-		    $r += $dir->[0];
-		    $c += $dir->[1];
+	    foreach my $layer (keys %{$Neighbors->{$row}{$col}}) {
+		foreach my $pos (@{$Neighbors->{$row}{$col}{$layer}}) {
+		    $occupied++ if $state->{$pos->[0]}{$pos->[1]} eq '#';
 		}
 	    }
 	    if ($state->{$row}{$col} eq 'L' and $occupied == 0) {
@@ -139,7 +142,7 @@ foreach (1..99) {
 	    }
 	}
     }
-#    say $_;
+
     my $same = compare_states( $state, $newstate);
     if ($same) {
 	is($same, 1862,"Part 2: ".$same);
