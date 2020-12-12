@@ -34,25 +34,19 @@ for (@file_contents) {
 }
 
 my %move = (
-    N => sub {
-        my ( $d, $p ) = @_;
-        $p->[0] += $d; return $p;
-    },
-    S => sub {
-        my ( $d, $p ) = @_;
-        $p->[0] -= $d; return $p;
-    },
-    E => sub {
-        my ( $d, $p ) = @_;
-        $p->[1] += $d; return $p;
-    },
-    W => sub {
-        my ( $d, $p ) = @_;
-        $p->[1] -= $d; return $p;
-    },
+
+    N => sub { my ( $d, $p ) = @_; $p->[0] += $d; return $p; },
+    S => sub { my ( $d, $p ) = @_; $p->[0] -= $d; return $p; },
+    E => sub { my ( $d, $p ) = @_; $p->[1] += $d; return $p; },
+    W => sub { my ( $d, $p ) = @_; $p->[1] -= $d; return $p; },
 
 );
 my %rotate = (
+
+	      # these rules are essentially from
+	      # https://askinglot.com/what-is-the-rule-for-rotating-90-degrees-counterclockwise,
+	      # but I had to tweak them to get the correct values
+	      
     L => sub {
         my ( $th, $p ) = @_;
         if    ( $th ==  90 ) { return [  $p->[1], -$p->[0] ] }
@@ -74,6 +68,7 @@ my $wp   = [ 1, 10 ];
 foreach my $ins (@instr) {
 
     if ( $ins->[0] eq 'F' ) {
+#	@$ship = map { $_ * $ins->[1] } @$wp;
         $ship->[0] += $wp->[0] * $ins->[1];
         $ship->[1] += $wp->[1] * $ins->[1];
     }
