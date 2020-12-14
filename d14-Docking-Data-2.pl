@@ -21,7 +21,7 @@ my $file = $testing ? 'test2.txt' : 'input.txt';
 open( my $fh, '<', "$file" );
 while (<$fh>) { chomp; s/\r//gm; push @file_contents, $_; }
 
-# solution inspired by https://www.reddit.com/r/adventofcode/comments/kcr1ct/2020_day_14_solutions/gfseyzj/
+# solution inspired by /u/Loonis (https://www.reddit.com/r/adventofcode/comments/kcr1ct/2020_day_14_solutions/gfseyzj/)
 
 ### SUBS
 
