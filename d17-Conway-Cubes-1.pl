@@ -6,8 +6,9 @@
 ###########################################################
 
 use Modern::Perl '2015';
+
 # useful modules
-use Test::More tests=>1;
+use Test::More tests => 1;
 use Clone 'clone';
 use Time::HiRes qw/gettimeofday tv_interval/;
 
@@ -20,111 +21,94 @@ open( my $fh, '<', "$file" );
 while (<$fh>) { chomp; s/\r//gm; push @file_contents, $_; }
 
 sub dump_state {
-    my ( $st ) = @_;
-    my $sum=0;
-    for my $x (keys %$st) {
-	for my $y (keys $st->{$x}->%*) {
-	    for my $z (keys $st->{$x}{$y}->%* ) {
-		$sum++ if (exists $st->{$x}{$y}{$z} and $st->{$x}{$y}{$z} eq '#');
-	    }
-	}
+    my ($st) = @_;
+    my $sum = 0;
+    for my $x ( keys %$st ) {
+        for my $y ( keys $st->{$x}->%* ) {
+            for my $z ( keys $st->{$x}{$y}->%* ) {
+                $sum++
+                    if ( exists $st->{$x}{$y}{$z}
+                    and $st->{$x}{$y}{$z} eq '#' );
+            }
+        }
     }
     return $sum;
 }
 
+my $state;
 
-my $state; 
-
-sub count_neighbors{
-    no warnings 'uninitialized'; 
-    my ( $x,$y,$z,) = @_;
+sub count_neighbors {
+    no warnings 'uninitialized';
+    my ( $x, $y, $z, ) = @_;
     my $count = 0;
-    for my $dx ($x-1,$x,$x+1) {
-	for my $dy ($y-1,$y,$y+1) {
-	    for my $dz($z-1,$z,$z+1) {
+    for my $dx ( $x - 1, $x, $x + 1 ) {
+        for my $dy ( $y - 1, $y, $y + 1 ) {
+            for my $dz ( $z - 1, $z, $z + 1 ) {
 
-		next if ( $x==$dx and $y==$dy and $z==$dz);
+                next if ( $x == $dx and $y == $dy and $z == $dz );
 
-		if ($state->{$dx}{$dy}{$dz} eq '#') {
+                if ( $state->{$dx}{$dy}{$dz} eq '#' ) {
 
-		    $count++;
-		}
-	    }
-	}
+                    $count++;
+                }
+            }
+        }
     }
     return $count;
 }
-my $y =0;
+my $y = 0;
 foreach (@file_contents) {
     my $x = 0;
-    foreach (split (//, $_)) {
-	$state->{$x}{$y}{0} = '#' if $_ eq '#';
-	$x++;
+    foreach ( split( //, $_ ) ) {
+        $state->{$x}{$y}{0} = '#' if $_ eq '#';
+        $x++;
     }
     $y++;
 }
-my $cycle = 0;
+my $cycle = 1;
 
 my $newstate = clone($state);
-say join(' ', -1, dump_state( $state ), dump_state( $newstate));
-				 
-while ($cycle<6) {
 
-    for my $x (sort keys %{$state}) {
-	for my $y (sort keys $state->{$x}->%*) {
-	    for my $z (sort keys $state->{$x}{$y}->%* ) {
-		# we now have an active cell, let's check its neighbors
-		for my $dx ($x-1,$x,$x+1) {
-		    for my $dy ($y-1,$y,$y+1) {
-			for my $dz ($z-1,$z,$z+1) {
-			    no warnings 'uninitialized'; 			    
-			    my $n = count_neighbors( $dx, $dy, $dz );
-			    if ($state->{$dx}{$dy}{$dz} eq '#') {
-				if ($n==2 or $n==3 ) {
-				    $newstate->{$dx}{$dy}{$dz} ='#'
-				} else {
-				    delete $newstate->{$dx}{$dy}{$dz}
-				}
-			    } else {
-				if ($n==3) {
-				    $newstate->{$dx}{$dy}{$dz} ='#'
-				}
-			    }
-			    
-			}
-		    }
-		}
-		
-	    }
-	}
+while ( $cycle <= 6 ) {
+    print "Cycle $cycle ... ";
+    my $cubes=0;
+    for my $x ( keys %{$state} ) {
+        for my $y ( keys $state->{$x}->%* ) {
+            for my $z ( keys $state->{$x}{$y}->%* ) {
+
+                # we now have an active cell, let's check its neighbors
+                for my $dx ( $x - 1, $x, $x + 1 ) {
+                    for my $dy ( $y - 1, $y, $y + 1 ) {
+                        for my $dz ( $z - 1, $z, $z + 1 ) {
+			    $cubes++;
+                            no warnings 'uninitialized';
+                            my $n = count_neighbors( $dx, $dy, $dz );
+                            if ( $state->{$dx}{$dy}{$dz} eq '#' ) {
+                                if ( $n == 2 or $n == 3 ) {
+                                    $newstate->{$dx}{$dy}{$dz} = '#';
+                                }
+                                else {
+                                    delete $newstate->{$dx}{$dy}{$dz};
+                                }
+                            }
+                            else {
+                                if ( $n == 3 ) {
+                                    $newstate->{$dx}{$dy}{$dz} = '#';
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
-    say join(' ', $cycle, dump_state( $state ), dump_state( $newstate));
+#    say join( ' ', $cycle, dump_state($state), dump_state($newstate) );
     $state = clone $newstate;
+    say "$cubes cubes visited";
     $cycle++;
 }
-my $part1=  dump_state( $state );
-is($part1,247, "Part 1: ".$part1);
+my $part1 = dump_state($state);
+is( $part1, 247, "Part 1: " . $part1 );
 
 say "Duration: ", tv_interval($start_time) * 1000, "ms";
-
-__END__
-		for my $dx ($x-1 .. $x+1) {
-		    for my $dy ($y-1 .. $y+1) {
-			for my $dz ($z-1 .. $z + 1) {
-#			    next if ($x==$dx and $y==$dy and $z==$dz);
-			    my $n = count_neighbors( $dx,$dy,$dz );
-			    if (exists $state->{$dx}{$dy}{$dz} and $state->{$dx}{$dy}{$dz} eq '#') {
-				if ($n==2 or $n==3) {
-				    $newstate->{$dx}{$dy}{$dz} = '#'
-				} else {
-				    delete $newstate->{$dx}{$dy}{$dz}
-				}
-			    } else { # doesn't exist or is not active
-				if ($n==3) {
-				    $newstate->{$dx}{$dy}{$dz} = '#'
-				}
-			    }
-			}
-		    }
-		}

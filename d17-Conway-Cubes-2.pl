@@ -74,13 +74,13 @@ foreach (@file_contents) {
     }
     $y++;
 }
-my $cycle = 0;
+my $cycle = 1;
 
 my $newstate = clone($state);
 
-while ( $cycle < 6 ) {
-    print "==> $cycle ...";
-    my $checks=0;
+while ( $cycle <= 6 ) {
+    print "Cycle $cycle ... ";
+    my $cubes=0;
     for my $x ( keys %{$state} ) {
         for my $y ( keys $state->{$x}->%* ) {
             for my $z ( keys $state->{$x}{$y}->%* ) {
@@ -91,7 +91,7 @@ while ( $cycle < 6 ) {
                         for my $dy ( $y - 1, $y, $y + 1 ) {
                             for my $dz ( $z - 1, $z, $z + 1 ) {
                                 for my $dw ( $w - 1, $w, $w + 1 ) {
-				    $checks++;
+				    $cubes++;
                                     no warnings 'uninitialized';
                                     my $n = count_neighbors( $dx, $dy, $dz,
                                         $dw );
@@ -120,7 +120,7 @@ while ( $cycle < 6 ) {
             }
         }
     }
-    say "$checks cubes visited";
+    say "$cubes cubes visited";
     $state = clone $newstate;
     $cycle++;
 }
