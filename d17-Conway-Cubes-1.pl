@@ -26,10 +26,9 @@ sub dump_state {
     for my $x ( keys %$st ) {
         for my $y ( keys $st->{$x}->%* ) {
             for my $z ( keys $st->{$x}{$y}->%* ) {
-                $sum++
-                    if ( exists $st->{$x}{$y}{$z}
-                    and $st->{$x}{$y}{$z} eq '#' );
-            }
+		if ( exists $st->{$x}{$y}{$z}
+		     and $st->{$x}{$y}{$z} eq '#' ) { $sum++ }
+	    }
         }
     }
     return $sum;
@@ -103,7 +102,6 @@ while ( $cycle <= 6 ) {
         }
     }
 
-#    say join( ' ', $cycle, dump_state($state), dump_state($newstate) );
     $state = clone $newstate;
     say "$cubes cubes visited";
     $cycle++;

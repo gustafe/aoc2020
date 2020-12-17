@@ -7,6 +7,7 @@
 use Modern::Perl '2015';
 
 # useful modules
+use List::Util qw/min max/;
 use Test::More tests=>1;
 use Clone 'clone';
 use Time::HiRes qw/gettimeofday tv_interval/;
@@ -22,18 +23,29 @@ while (<$fh>) { chomp; s/\r//gm; push @file_contents, $_; }
 sub dump_state {
     my ($st) = @_;
     my $sum = 0;
+    my %ranges = ( x => {min => min(keys %$st), max => max(keys %$st)});
+    for my $id ('y','z','w') {
+	$ranges{$id} = {min=>10_000, max=>-10_000};
+    }
     for my $x ( keys %$st ) {
         for my $y ( keys $st->{$x}->%* ) {
+	    if ($y < $ranges{y}->{min}) { $ranges{y}->{min}=$y  }
+	    if ($y > $ranges{y}->{max}) { $ranges{y}->{max}=$y  }
             for my $z ( keys $st->{$x}{$y}->%* ) {
+		if ($z < $ranges{z}->{min}) { $ranges{z}->{min}=$z  }
+		if ($z > $ranges{z}->{max}) { $ranges{z}->{max}=$z  }
+
                 for my $w ( keys $st->{$x}{$y}{$z}->%* ) {
-                    $sum++
-                        if ( exists $st->{$x}{$y}{$z}{$w}
-                        and $st->{$x}{$y}{$z}{$w} eq '#' );
+		    if ($w < $ranges{w}->{min}) { $ranges{w}->{min}=$w  }
+		    if ($w > $ranges{w}->{max}) { $ranges{w}->{max}=$w  }
+		    if ( exists $st->{$x}{$y}{$z}{$w}
+                        and $st->{$x}{$y}{$z}{$w} eq '#' ) { $sum++ }
                 }
             }
         }
     }
-    return $sum;
+    my $ranges;
+    return [$sum, \%ranges];
 }
 
 my $state;
@@ -48,7 +60,6 @@ sub count_neighbors {
         for my $dy ( $y - 1, $y, $y + 1 ) {
             for my $dz ( $z - 1, $z, $z + 1 ) {
                 for my $dw ( $w - 1, $w, $w + 1 ) {
-
                     next
                         if ($x == $dx
                         and $y == $dy
@@ -56,7 +67,6 @@ sub count_neighbors {
                         and $w == $dw );
 
                     if ( $state->{$dx}{$dy}{$dz}{$dw} eq '#' ) {
-
                         $count++;
                     }
                 }
@@ -102,14 +112,12 @@ while ( $cycle <= 6 ) {
                                                 = '#';
                                         }
                                         else {
-                                            delete $newstate->{$dx}{$dy}{$dz}
-                                                {$dw};
+                                        delete $newstate->{$dx}{$dy}{$dz}{$dw};
                                         }
                                     }
                                     else {
                                         if ( $n == 3 ) {
-                                            $newstate->{$dx}{$dy}{$dz}{$dw}
-                                                = '#';
+                                          $newstate->{$dx}{$dy}{$dz}{$dw}='#';
                                         }
                                     }
                                 }
@@ -126,7 +134,14 @@ while ( $cycle <= 6 ) {
 }
 
 # count active
-my $part2=  dump_state( $state );
+my $data = dump_state( $state );
+my $part2=  $data->[0];
+my $ranges = $data->[1];
+say "Number of active cubes: ", $part2;
+say "==> ranges";
+foreach my $range (qw/x y z w/) {
+    say join(' ','    ',$range, map {$ranges->{$range}->{$_}} qw/min max/);
+}
 is($part2,1392, "Part 2: ".$part2);
 say "Duration: ", tv_interval($start_time) * 1000, "ms";
 
