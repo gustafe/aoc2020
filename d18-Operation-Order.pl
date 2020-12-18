@@ -98,18 +98,14 @@ foreach (<DATA>) {
 my $sum = 0;
 foreach my $expr (@file_contents) {
     my $res = shunting_yard($expr);
-
-    #    say join(' ',$expr, '==>', $res);
     my $val = RPN($res);
-
-    #    say $val;
     $sum += $val;
 }
 if ($part2) {
     is( $sum, 388966573054664, "Part2: " . $sum );
 }
 else {
-    is( $sum, 18213007238947, "Part1: " . $sum );
+    is( $sum,  18213007238947, "Part1: " . $sum );
 }
 
 done_testing();
