@@ -19,7 +19,8 @@ open( my $fh, '<', "$file" );
 while (<$fh>) { chomp; s/\r//gm; push @file_contents, $_; }
 
 ### CODE
-# shunting yard algo adapted from http://www.rosettacode.org/wiki/Parsing/RPN_calculator_algorithm#Perl
+# shunting yard algo adapted from http://www.rosettacode.org/wiki/Parsing/Shunting-yard_algorithm#Perl
+
 my %prec = ( '*' => 2, '+' => 2, '(' => 1 );
 if ($part2) {
     $prec{'+'} = 3;
