@@ -87,12 +87,8 @@ foreach (<DATA>) {
     my ( $expr, $test1, $test2 ) = split ':';
     my $res = shunting_yard($expr);
     my $val = RPN($res);
-    if ($part2) {
-        ok( $val == $test2 );
-    }
-    else {
-        ok( $val == $test1 );
-    }
+    if ($part2) { ok( $val == $test2 ) }
+    else { ok( $val == $test1 ) }
 }
 
 my $sum = 0;
