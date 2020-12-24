@@ -25,13 +25,14 @@ my $Map;
 my $newMap;
 
 # x,y,z coordinates - see https://www.redblobgames.com/grids/hexagons/
+# these hexes are "pointy", the flat sides are E and W
 my %move = (
-    e  => sub { [ +1, -1, 0 ] },
-    ne => sub { [ +1, 0,  -1 ] },
-    se => sub { [ 0,  -1, +1 ] },
-    w  => sub { [ -1, +1, 0 ] },
-    sw => sub { [ -1, 0,  +1 ] },
-    nw => sub { [ 0,  +1, -1 ] },
+    e  => sub { [  1, -1,  0 ] },
+    ne => sub { [  1,  0, -1 ] },
+    se => sub { [  0, -1,  1 ] },
+    w  => sub { [ -1,  1,  0 ] },
+    sw => sub { [ -1,  0,  1 ] },
+    nw => sub { [  0,  1, -1 ] },
 );
 
 sub count_map {
@@ -133,12 +134,14 @@ while ( $day < 100 ) {
                         if ( $r->{black} == 2 ) {
                             $newMap->{ $p->[0] }{ $p->[1] }{ $p->[2] } = 1;
                         }
-                        else {    # add as white tile
+                        else {
+			    # this is a white tile, we don't need to keep it
                             delete $newMap->{ $p->[0] }{ $p->[1] }{ $p->[2] };
                         }
                     }
                     elsif ( $Map->{ $p->[0] }{ $p->[1] }{ $p->[2] } == 1 ) {
                         if ( $r->{black} == 0 or $r->{black} > 2 ) {
+			    # turn white -> remove from the set of tiles
                             delete $newMap->{ $p->[0] }{ $p->[1] }{ $p->[2] };
                         }
                     }
