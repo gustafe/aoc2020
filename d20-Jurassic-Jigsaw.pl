@@ -174,13 +174,13 @@ sub find_neighbors_by_edge {
     my $edges = edges($image);
     my $sought = join( '', @{ $edges->{$edge} } );
     my @results;
-    my @neighbors = keys %{ $tiles{$id}->{matches} };
+    my @neighbors = keys %{ $tiles{$id}{matches} };
     for my $nid (@neighbors) {
-        my $n_edges = all_edges( $tiles{$nid}->{matrix} )->{named};
+        my $n_edges = all_edges( $tiles{$nid}{matrix} )->{named};
         for my $or ( sort keys %{$n_edges} ) {
             for my $d (qw/N E S W/) {
                 next unless $d eq $opposites{$edge};
-                my $target = join( '', @{ $n_edges->{$or}->{$d} } );
+                my $target = join( '', @{ $n_edges->{$or}{$d} } );
                 if ( $target eq $sought ) {
                     push @results, [ $nid, $or ];
                 }
@@ -216,20 +216,20 @@ for my $entry (@file_contents) {
 
     }
 
-    $tiles{$id}->{matrix} = $matrix;
-    $tiles{$id}->{edges}  = all_edges($matrix)->{canon};
+    $tiles{$id}{matrix} = $matrix;
+    $tiles{$id}{edges}  = all_edges($matrix)->{canon};
 }
 
 for my $id1 ( sort keys %tiles ) {
-    my %edges1 = $tiles{$id1}->{edges}->%*;
+    my %edges1 = $tiles{$id1}{edges}->%*;
     for my $id2 ( sort keys %tiles ) {
         next if ( $id1 == $id2 );
         my $matches = 0;
 
         for my $e1 ( keys %edges1 ) {
-            if ( exists $tiles{$id2}->{edges}->{$e1} ) {
-                $tiles{$id1}->{matches}->{$id2} = $e1;
-                $tiles{$id2}->{matches}->{$id1} = $e1;
+            if ( exists $tiles{$id2}{edges}{$e1} ) {
+                $tiles{$id1}{matches}{$id2} = $e1;
+                $tiles{$id2}{matches}{$id1} = $e1;
             }
         }
     }
@@ -237,23 +237,23 @@ for my $id1 ( sort keys %tiles ) {
 
 my $part1 = 1;
 for my $k ( sort keys %tiles ) {
-    if ( scalar keys $tiles{$k}->{matches}->%* == 2 ) {
+    if ( scalar keys $tiles{$k}{matches}->%* == 2 ) {
         $part1 *= $k;
         my %top_left;
-        my %edges1 = %{ edges( $tiles{$k}->{matrix} ) };
-        for my $mid ( sort keys $tiles{$k}->{matches}->%* ) {
+        my %edges1 = %{ edges( $tiles{$k}{matrix} ) };
+        for my $mid ( sort keys $tiles{$k}{matches}->%* ) {
 
             my %target_edges
-                = %{ all_edges( $tiles{$mid}->{matrix} )->{named} };
+                = %{ all_edges( $tiles{$mid}{matrix} )->{named} };
             for my $or ( keys %target_edges ) {
                 my %edges2 = %{ $target_edges{$or} };
                 for my $d1 (qw/N E S W/) {
                     if (join( '', @{ $edges1{$d1} } ) eq
                         join( '', @{ $edges2{ $opposites{$d1} } } ) )
                     {
-                        $tiles{$k}->{neighbors}->{$d1}
+                        $tiles{$k}{neighbors}{$d1}
                             = { id => $mid, or => $or };
-                        $tiles{$mid}->{neighbors}->{ $opposites{$d1} }
+                        $tiles{$mid}{neighbors}{ $opposites{$d1} }
                             = { id => $k, or => '000' };
                     }
                 }
@@ -272,14 +272,14 @@ else {
 my @Map;
 my $top_left_id;
 for my $k ( keys %tiles ) {
-    if (    exists $tiles{$k}->{neighbors}->{E}
-        and exists $tiles{$k}->{neighbors}->{S} )
+    if (    exists $tiles{$k}{neighbors}{E}
+        and exists $tiles{$k}{neighbors}{S} )
     {
         $top_left_id = $k;
-        $Map[0][0] = { id => $k, image => $tiles{$k}->{matrix} };
-        my $n = $tiles{$k}->{neighbors}->{E};
+        $Map[0][0] = { id => $k, image => $tiles{$k}{matrix} };
+        my $n = $tiles{$k}{neighbors}{E};
 
-        my $image = $rotate{ $n->{or} }->( $tiles{ $n->{id} }->{matrix} );
+        my $image = $rotate{ $n->{or} }->( $tiles{ $n->{id} }{matrix} );
         $Map[0][1] = { id => $n->{id}, image => $image };
         last;
     }
@@ -302,7 +302,7 @@ for my $c ( 1 .. $no_of_rows - 1 ) {
     my $n = shift @$candidates;
     $Map[0][$c]->{id} = $n->[0];
     $Map[0][$c]->{image}
-        = $rotate{ $n->[1] }->( $tiles{ $n->[0] }->{matrix} );
+        = $rotate{ $n->[1] }->( $tiles{ $n->[0] }{matrix} );
 }
 
 # build left edge (West side)
@@ -314,7 +314,7 @@ for my $r ( 1 .. $no_of_rows - 1 ) {
     my $n = shift @$candidates;
     $Map[$r][0]->{id} = $n->[0];
     $Map[$r][0]->{image}
-        = $rotate{ $n->[1] }->( $tiles{ $n->[0] }->{matrix} );
+        = $rotate{ $n->[1] }->( $tiles{ $n->[0] }{matrix} );
 }
 
 # build rest of the map
@@ -327,7 +327,7 @@ for my $r ( 1 .. $no_of_rows - 1 ) {
         my $n = shift @$candidates;
         $Map[$r][$c]->{id} = $n->[0];
         $Map[$r][$c]->{image}
-            = $rotate{ $n->[1] }->( $tiles{ $n->[0] }->{matrix} );
+            = $rotate{ $n->[1] }->( $tiles{ $n->[0] }{matrix} );
     }
 }
 
@@ -340,7 +340,7 @@ for my $r ( 0 .. $no_of_rows - 1 ) {
         for my $r_i ( 1 .. 8 ) {
             for my $c_i ( 1 .. 8 ) {
                 $hashcount++ if $inner->[$r_i][$c_i] eq '#';
-                $Img->[ $r * 8 + $r_i - 1 ]->[ $c * 8 + $c_i - 1 ]
+                $Img->[ $r * 8 + $r_i - 1 ][ $c * 8 + $c_i - 1 ]
                     = $inner->[$r_i][$c_i];
             }
         }
@@ -359,8 +359,9 @@ for my $rot ( sort keys %rotate ) {
                 [ 1, 19 ], [ 2, 1 ],  [ 2, 4 ],  [ 2, 7 ],
                 [ 2, 10 ], [ 2, 13 ], [ 2, 16 ]
             );
-            if ( all { $I->[ $r + $_->[0] ]->[ $c + $_->[1] ] eq '#' }
-                @offset )
+            if (all { $I->[ $r + $_->[0] ][ $c + $_->[1] ] eq '#' }
+                @offset
+                )
             {
                 $choppiness = $choppiness - 15;
             }
