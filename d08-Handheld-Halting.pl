@@ -49,10 +49,10 @@ foreach my $line_no (@{$ops{'jmp'}}) {
     # modify the original
     my $code = clone(\@original);
     # sanity check
-    if ($original[$line_no]->[0] eq 'jmp') {
-	$code->[$line_no]->[0] = 'nop'
+    if ($original[$line_no][0] eq 'jmp') {
+	$code->[$line_no][0] = 'nop'
     } else {
-	die "value ",$original[$line_no]->[0]," is not expected 'jmp'!";
+	die "value ",$original[$line_no][0]," is not expected 'jmp'!";
     }
     my $ret = run_program($code);
     if (defined $ret->[0]) {

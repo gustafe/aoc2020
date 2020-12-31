@@ -46,7 +46,6 @@ my %rotate = (
 	      # these rules are essentially from
 	      # https://askinglot.com/what-is-the-rule-for-rotating-90-degrees-counterclockwise,
 	      # but I had to tweak them to get the correct values
-	      
     L => sub {
         my ( $th, $p ) = @_;
         if    ( $th ==  90 ) { return [  $p->[1], -$p->[0] ] }

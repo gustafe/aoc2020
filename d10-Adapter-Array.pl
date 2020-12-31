@@ -58,10 +58,10 @@ unshift @sequence, 0;
 # build a graph
 my @G;
 for my $i ( 0 .. $#sequence ) {
-    $G[$i]->{v} = $sequence[$i];
+    $G[$i]{v} = $sequence[$i];
     for my $step (  1 .. 3 ) {
         last unless defined $sequence[$i+$step];
-        push @{ $G[$i]->{e} }, $i+$step if $sequence[$i+$step] - $sequence[$i] <= 3;
+        push @{ $G[$i]{e} }, $i+$step if $sequence[$i+$step] - $sequence[$i] <= 3;
     }
 }
 
@@ -93,7 +93,6 @@ sub traverse {
     return $count;
 }
 my $part2;
-#$part2 = slow_traverse(0);
 $part2 = traverse(0);
 
 is( $part2, 113387824750592, "Part 2: " . $part2 );

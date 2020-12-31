@@ -103,7 +103,7 @@ foreach (@file_contents) {
 }
 
 # count the valid passports!
-my %valids = (1=> 0, 2=>0 );
+my %valids = ( 1=> 0, 2=>0 );
 foreach my $record (@records) {
     if ( scalar keys %{$record} == 8 ) {
         $valids{1}++;

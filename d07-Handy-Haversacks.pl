@@ -39,7 +39,7 @@ while (@file_contents) {
     my @contents = split( /,/, $contents );
     foreach my $content (@contents) {
         my ( $amount, $kind ) = $content =~ m/(\d+) (.*) bag/;
-        $hash->{$container}->{$kind} = $amount;
+        $hash->{$container}{$kind} = $amount;
     }
 }
 
@@ -52,7 +52,7 @@ my @queue = ('shiny gold');
 while (@queue) {
     my $target = shift @queue;
     foreach my $bag ( keys %$hash ) {
-        if ( exists $hash->{$bag}->{$target} ) {
+        if ( exists $hash->{$bag}{$target} ) {
             $results{$bag}++;
             push @queue, $bag;
         }
@@ -68,7 +68,7 @@ my $count = 0;
 while (@queue) {
     my $target = shift @queue;
     foreach my $bag ( keys %{ $hash->{ $target->[0] } } ) {
-        my $multiple = $target->[1] * $hash->{ $target->[0] }->{$bag};
+        my $multiple = $target->[1] * $hash->{ $target->[0] }{$bag};
         $count += $multiple;
         push @queue, [ $bag, $multiple ];
     }

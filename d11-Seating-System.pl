@@ -28,8 +28,8 @@ my $maxcol;
 foreach my $line (@file_contents) {
     $maxcol = 0;
     foreach my $char ( split( //, $line ) ) {
-        $Map->{$maxrow}->{$maxcol}   = $char;
-        $state->{$maxrow}->{$maxcol} = $char;
+        $Map->{$maxrow}{$maxcol}   = $char;
+        $state->{$maxrow}{$maxcol} = $char;
         $maxcol++;
     }
     $maxrow++;
