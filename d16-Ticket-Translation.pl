@@ -47,11 +47,11 @@ foreach (@tickets) {
     foreach my $v (@vals) {
         my $field_row = 0;
         foreach my $rule ( keys %rules ) {
-            if ((       $v >= $rules{$rule}->{r1}->{min}
-                    and $v <= $rules{$rule}->{r1}->{max}
+            if ((       $v >= $rules{$rule}{r1}{min}
+                    and $v <= $rules{$rule}{r1}{max}
                 )
-                or (    $v >= $rules{$rule}->{r2}->{min}
-                    and $v <= $rules{$rule}->{r2}->{max} )
+                or (    $v >= $rules{$rule}{r2}{min}
+                    and $v <= $rules{$rule}{r2}{max} )
                 )
             {
 
@@ -93,11 +93,11 @@ foreach ( my $i = 0; $i < scalar(@target); $i++ ) {
         foreach my $ticket (@valids) {
             my @fields = split( ',', $ticket );
             my $field = $fields[$i];
-            if ((       $field >= $rules{$rule}->{r1}->{min}
-                    and $field <= $rules{$rule}->{r1}->{max}
+            if ((       $field >= $rules{$rule}{r1}{min}
+                    and $field <= $rules{$rule}{r1}{max}
                 )
-                or (    $field >= $rules{$rule}->{r2}->{min}
-                    and $field <= $rules{$rule}->{r2}->{max} )
+                or (    $field >= $rules{$rule}{r2}{min}
+                    and $field <= $rules{$rule}{r2}{max} )
                 ) { $validrule++; }
         }
 
@@ -120,7 +120,7 @@ while ( keys %hits ) {
         while ( my ( $k, $rule ) = each %solution ) {
             foreach my $v ( keys %{ $hits{$field} } ) {
                 if ( $v eq $rule ) {
-                    delete $hits{$field}->{$v};
+                    delete $hits{$field}{$v};
                 }
             }
         }

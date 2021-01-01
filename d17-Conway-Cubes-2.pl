@@ -29,15 +29,15 @@ sub dump_state {
     }
     for my $x ( keys %$st ) {
         for my $y ( keys $st->{$x}->%* ) {
-	    if ($y < $ranges{y}->{min}) { $ranges{y}->{min}=$y  }
-	    if ($y > $ranges{y}->{max}) { $ranges{y}->{max}=$y  }
+	    if ($y < $ranges{y}{min}) { $ranges{y}{min}=$y  }
+	    if ($y > $ranges{y}{max}) { $ranges{y}{max}=$y  }
             for my $z ( keys $st->{$x}{$y}->%* ) {
-		if ($z < $ranges{z}->{min}) { $ranges{z}->{min}=$z  }
-		if ($z > $ranges{z}->{max}) { $ranges{z}->{max}=$z  }
+		if ($z < $ranges{z}{min}) { $ranges{z}{min}=$z  }
+		if ($z > $ranges{z}{max}) { $ranges{z}{max}=$z  }
 
                 for my $w ( keys $st->{$x}{$y}{$z}->%* ) {
-		    if ($w < $ranges{w}->{min}) { $ranges{w}->{min}=$w  }
-		    if ($w > $ranges{w}->{max}) { $ranges{w}->{max}=$w  }
+		    if ($w < $ranges{w}{min}) { $ranges{w}{min}=$w  }
+		    if ($w > $ranges{w}{max}) { $ranges{w}{max}=$w  }
 		    if ( exists $st->{$x}{$y}{$z}{$w}
                         and $st->{$x}{$y}{$z}{$w} eq '#' ) { $sum++ }
                 }

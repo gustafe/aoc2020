@@ -348,7 +348,7 @@ for my $r ( 0 .. $no_of_rows - 1 ) {
 }
 
 # find monsters
-for my $rot ( sort keys %rotate ) {
+for my $rot ( keys %rotate ) {
     my $choppiness = $hashcount;
     my $I          = $rotate{$rot}->($Img);
     for my $r ( 0 .. ( $no_of_rows * 8 - 3 ) ) {
@@ -363,7 +363,7 @@ for my $rot ( sort keys %rotate ) {
                 @offset
                 )
             {
-                $choppiness = $choppiness - 15;
+                $choppiness = $choppiness - scalar @offset;
             }
         }
     }

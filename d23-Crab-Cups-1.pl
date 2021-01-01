@@ -39,7 +39,7 @@ while ( $round < 100 ) {
 
     my @pickup;
     my %seen;
-    foreach ( 1, 2, 3 ) {
+    for ( 1, 2, 3 ) {
         my $target = ( $currpos + 1 );
         if ( $target > $#cups ) {
             $target = 0;
@@ -66,13 +66,12 @@ while ( $round < 100 ) {
         $currlabel = $cups[0];
     }
 
-    #    $currlabel = $cups[$currpos];
     say "    currpos: $currpos currlabel: $currlabel destlabel: $destlabel"
         if $debug;
 
     $destpos = first_index { $_ == $destlabel } @cups;
     say "    destlabel: $destlabel destpos: $destpos" if $debug;
-    foreach ( 1, 2, 3 ) {
+    for ( 1, 2, 3 ) {
         my $target = ( $destpos + 1 ) % $no_of_cups;
         my $val    = pop @pickup;
         splice( @cups, $target, 0, $val );

@@ -93,13 +93,13 @@ sub recurse_game {
 ### CODE
 # part 1
 my @decks;
-foreach (@file_contents) {
+for (@file_contents) {
     my @data = split( "\n", $_ );
     shift @data;
     push @decks, [@data];
 }
 
-foreach (@decks) {
+for (@decks) {
     say join( ',', map { sprintf( "%2d", $_ ) } ( $_->@* ) );
 }
 while ( $decks[0]->@* and $decks[1]->@* ) {
@@ -119,7 +119,7 @@ is( $part1, 33561, "Part 1: " . $part1 );
 # part2
 # reload decks
 @decks = ();
-foreach (@file_contents) {
+for (@file_contents) {
     my @data = split( "\n", $_ );
     shift @data;
     push @decks, [@data];

@@ -21,7 +21,7 @@ while (<$fh>) { chomp; s/\r//gm; push @file_contents, $_; }
 ### CODE
 my %ingredients;
 my %allergens;
-foreach my $line (@file_contents) {
+for my $line (@file_contents) {
     my @ins;
     my @alls;
     if ( $line =~ m/^(.*) \(contains (.*)\)$/ ) {
@@ -30,12 +30,12 @@ foreach my $line (@file_contents) {
         map {s/^\s+|\s+$//g} @alls;
 
         foreach my $in (@ins) {
-            $ingredients{$in}->{num}++;
+            $ingredients{$in}{num}++;
         }
         foreach my $al (@alls) {
-            $allergens{$al}->{num}++;
+            $allergens{$al}{num}++;
             foreach my $i (@ins) {
-                $allergens{$al}->{counts}->{$i}++;
+                $allergens{$al}->{counts}{$i}++;
             }
         }
     }
@@ -44,17 +44,17 @@ foreach my $line (@file_contents) {
     }
 }
 my %possibles;
-foreach my $al ( keys %allergens ) {
-    foreach my $in ( keys %{ $allergens{$al}->{counts} } ) {
-        if ( $allergens{$al}->{counts}->{$in} == $allergens{$al}->{num} ) {
-            $possibles{$in}->{$al}++;
+for my $al ( keys %allergens ) {
+    for my $in ( keys %{ $allergens{$al}{counts} } ) {
+        if ( $allergens{$al}{counts}{$in} == $allergens{$al}{num} ) {
+            $possibles{$in}{$al}++;
         }
     }
 }
 
 my $part1 = 0;
-foreach my $in ( keys %ingredients ) {
-    $part1 += $ingredients{$in}->{num} unless exists $possibles{$in};
+for my $in ( keys %ingredients ) {
+    $part1 += $ingredients{$in}{num} unless exists $possibles{$in};
 }
 is( $part1, 2461, "Part 1: " . $part1 );
 
@@ -64,7 +64,7 @@ my %solution;
 
 # this part cribbed from 2018D16 and 2020D16
 while ( keys %possibles ) {
-    foreach my $ing ( keys %possibles ) {
+    for my $ing ( keys %possibles ) {
         if ( scalar keys %{ $possibles{$ing} } == 1 ) {
             my $al = ( keys %{ $possibles{$ing} } )[0];
             $solution{$ing} = $al;
@@ -74,7 +74,7 @@ while ( keys %possibles ) {
         while ( my ( $k, $al ) = each %solution ) {
             foreach my $v ( keys %{ $possibles{$ing} } ) {
                 if ( $v eq $al ) {
-                    delete $possibles{$ing}->{$v};
+                    delete $possibles{$ing}{$v};
                 }
             }
         }
