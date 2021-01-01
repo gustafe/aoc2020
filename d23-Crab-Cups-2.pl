@@ -15,6 +15,7 @@ my $start_time = [gettimeofday];
 my $testing = 0;
 my $input = $testing ? '389125467' : '942387615';
 ### CODE
+# code inspired by this solution by /u/musifter https://www.reddit.com/r/adventofcode/comments/kimluc/2020_day_23_solutions/ggs3y3u/
 my @circle;
 my @input_ary = split( //, $input );
 
